@@ -108,8 +108,8 @@ def compute_cluster():
     choice = input("Введіть номер кластера: ")
     if not choice.isdigit(): return
     choice = int(choice)
-    if 1 <= choice <= len(df):
-        weekly_tonnage = df.loc[choice-1,'waste_tonnes_week']
+    if 0 <= choice <= len(df):
+        weekly_tonnage = df.loc[choice,'waste_tonnes_week']
         annual_tonnage = weekly_tonnage*52
 
         for plant_type in ["MBO","Sorting"]:
@@ -120,8 +120,8 @@ def compute_cluster():
             payback_base = 0
             area = estimate_area(annual_tonnage)
 
-            print(f"\n--- Розрахунок для {plant_type} Cluster {df.loc[choice-1,'cluster_id']} ---")
-            print(f"Region: {df.loc[choice-1,'region']}")
+            print(f"\n--- Розрахунок для {plant_type} Cluster {df.loc[choice,'cluster_id']} ---")
+            print(f"Region: {df.loc[choice,'region']}")
             print(f"Тижневий обсяг: {round(weekly_tonnage)} т")
             print(f"Річний обсяг: {round(annual_tonnage)} т/рік")
             print(f"Площа заводу: {area} м²")

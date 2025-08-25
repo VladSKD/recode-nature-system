@@ -149,8 +149,8 @@ def compute_cluster():
     choice = input("Введіть номер кластера: ")
     if not choice.isdigit(): return
     choice = int(choice)
-    if 1 <= choice <= len(df):
-        weekly_tonnage = df.loc[choice - 1, 'waste_tonnes_week'] * 0.03  
+    if 0 <= choice <= len(df):
+        weekly_tonnage = df.loc[choice, 'waste_tonnes_week'] * 0.03  
         annual_tonnage = weekly_tonnage * 52
 
         capex = calc_capex(annual_tonnage)
@@ -161,8 +161,8 @@ def compute_cluster():
         payback_base = capex["Base"] / (annual_revenue - annual_opex) if annual_revenue > annual_opex else math.inf
         area = estimate_area(annual_tonnage)
 
-        print(f"\n--- Розрахунок для Cluster {df.loc[choice - 1, 'cluster_id']} ---")
-        print(f"Region: {df.loc[choice - 1, 'region']}")
+        print(f"\n--- Розрахунок для Cluster {df.loc[choice, 'cluster_id']} ---")
+        print(f"Region: {df.loc[choice, 'region']}")
         print(f"Тижневий обсяг гуми: {round(weekly_tonnage)} т")
         print(f"Річний обсяг: {round(annual_tonnage)} т/рік")
         print(f"Площа заводу: {area} м²")
@@ -239,7 +239,7 @@ def compute_all_clusters_to_file():
 def menu():
     while True:
         clear_console()
-        print("\n=== Головне меню (Гумопереробний завод) ===")
+        print("\n=== Головне меню ===")
         print("1. Перейти до вибору тижневого діапазону гуми")
         print("2. Перейти до вибору кластера")
         print("3. Показати інформацію про всі кластери")

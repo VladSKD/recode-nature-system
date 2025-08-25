@@ -137,6 +137,64 @@ def show_all_clusters():
     print(df.to_string(index=False))
     pause()
 
+# --- Розрахунок для одного кластера ---
+def compute_cluster():
+    clear_console()
+    try:
+        df = pd.read_csv("cost_all_clusters.csv")
+        df = df[['cluster_id','region','waste_tonnes_week']]
+    except Exception as e:
+        print(f"Помилка при завантаженні файлу: {e}")
+        pause()
+        return
+
+    unique_clusters = df['cluster_id'].unique()
+    print(f"\nДоступні кластери: {', '.join(map(str, unique_clusters))}")
+    choice = input("Введіть номер кластера (cluster_id): ")
+
+    if not choice.isdigit():
+        print("Невірне значення.")
+        pause()
+        return
+
+    choice = int(choice)
+    cluster_row = df[df['cluster_id'] == choice]
+
+    if cluster_row.empty:
+        print("Кластер з таким ID не знайдено.")
+        pause()
+        return
+
+    row = cluster_row.iloc[0]
+    weekly_tonnage = row['waste_tonnes_week'] * ELECTRONICS_SHARE
+    annual_tonnage = weekly_tonnage * 52
+
+    capex = calc_capex(annual_tonnage)
+    staff_count = get_staff_count(annual_tonnage)
+    weekly_wages = calc_weekly_wages(staff_count)
+    annual_opex = calc_annual_opex(weekly_wages)
+    annual_revenue = calc_annual_revenue(annual_tonnage)
+    payback_base = capex["Base"] / (annual_revenue - annual_opex) if annual_revenue > annual_opex else math.inf
+    area = estimate_area(annual_tonnage)
+
+    print(f"\n--- Розрахунок для Cluster {row['cluster_id']} ---")
+    print(f"Регіон: {row['region']}")
+    print(f"Тижневий обсяг електроніки (5%): {round(weekly_tonnage)} т")
+    print(f"Річний обсяг: {round(annual_tonnage)} т/рік")
+    print(f"Площа заводу: {area} м²")
+    print(f"Щотижневі зарплати: {weekly_wages} €")
+    print(f"Щорічний OPEX: {round(annual_opex,2)} €")
+    print(f"Очікуваний щорічний дохід: {round(annual_revenue,2)} €")
+    print(f"Прогнозована окупність (роки): {round(payback_base,1)}")
+    print("Персонал:")
+    for role, count in staff_count.items():
+        print(f"  {role}: {count} осіб")
+    print("CAPEX (€):")
+    for scen, val in capex.items():
+        print(f"  {scen}: {round(val,2)}")
+
+    pause()
+
 
 # --- Функція для обрахунку всіх кластерів та збереження в CSV ---
 def compute_all_clusters_to_file():
@@ -179,44 +237,43 @@ def compute_all_clusters_to_file():
 
 
 # --- Меню ---
-# --- Меню ---
 def menu():
     while True:
         clear_console()
-        print("\n=== Головне меню WEEE ===")
-        print("1. Перейти до вибору тижневого діапазону WEEE")
-        print("2. Показати інформацію про всі кластери WEEE")
+        print("\n=== Головне меню  ===")
+        print("1. Перейти до вибору тижневого діапазону")
+        print("2. Показати інформацію про всі кластери")
         print("3. Обрахувати всі кластери WEEE та зберегти у файл")
-        print("4. Вихід")
+        print("4. Розрахунок для одного кластера")
+        print("5. Вихід")
         choice = input("Введіть номер: ")
 
-        if choice=="4":
+        if choice == "5":
             print("Вихід...")
             break
-        elif choice=="1":
+        elif choice == "1":
             clear_console()
             print("\nВиберіть тижневий діапазон WEEE:")
-            for i, r in enumerate(weekly_weee_ranges,1):
-                print(f"{i}. {r[0]} – {r[1] if r[1]!=math.inf else '∞'} т/тиждень")
+            for i, r in enumerate(weekly_weee_ranges, 1):
+                print(f"{i}. {r[0]} – {r[1] if r[1] != math.inf else '∞'} т/тиждень")
             sub_choice = input("Введіть номер діапазону: ")
-            if not sub_choice.isdigit(): 
+            if not sub_choice.isdigit():
                 pause()
                 continue
             sub_choice = int(sub_choice)
             if 1 <= sub_choice <= len(weekly_weee_ranges):
-                compute_range(weekly_weee_ranges[sub_choice-1])
+                compute_range(weekly_weee_ranges[sub_choice - 1])
             else:
                 print("Неправильний номер діапазону.")
                 pause()
 
-        elif choice=="2":
+        elif choice == "2":
             show_all_clusters()
-        elif choice=="3":
+        elif choice == "3":
             compute_all_clusters_to_file()
+        elif choice == "4":
+            compute_cluster()
         else:
             print("Неправильний номер меню.")
             pause()
 
-
-if __name__=="__main__":
-    menu()

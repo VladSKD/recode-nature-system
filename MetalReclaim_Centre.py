@@ -177,13 +177,13 @@ def compute_cluster():
     max_cluster = df['cluster_id'].max()
     print(f"\nДоступні кластери: від Cluster {min_cluster} до Cluster {max_cluster}")
 
-    choice = input("Введіть номер рядка (позицію) кластера в файлі (1-based): ")
+    choice = input("Введіть номер  кластера: ")
     if not choice.isdigit():
         print("Невірний ввід.")
         pause()
         return
     choice = int(choice)
-    if 1 <= choice <= len(df):
+    if 0 <= choice <= len(df):
         row = df.iloc[choice-1]
         total_weekly_waste = row['waste_tonnes_week']
         weekly_metal = total_weekly_waste * 0.04  # 4% металу
@@ -285,11 +285,11 @@ def compute_all_clusters_to_file():
 def menu():
     while True:
         clear_console()
-        print("\n=== Меню: Металургійний переробний завод ===")
+        print("\n=== Головне меню ===")
         print("1. Обчислити для тижневого діапазону металу")
-        print("2. Обчислити для кластера (з файлу cost_all_clusters.csv, метал = 4%)")
-        print("3. Показати інформацію про всі кластери (файл)")
-        print("4. Обрахувати всі кластери та зберегти у файл cost_metal.csv")
+        print("2. Обчислити для кластера ")
+        print("3. Показати інформацію про всі кластери ")
+        print("4. Обрахувати всі кластери та зберегти у файл")
         print("5. Вийти")
         choice = input("Введіть номер: ").strip()
         if choice == "5":
