@@ -184,7 +184,7 @@ def compute_cluster():
         return
     choice = int(choice)
     if 0 <= choice <= len(df):
-        row = df.iloc[choice-1]
+        row = df.iloc[choice]
         total_weekly_waste = row['waste_tonnes_week']
         weekly_metal = total_weekly_waste * 0.04  # 4% металу
         annual_tonnage = weekly_metal * 52
