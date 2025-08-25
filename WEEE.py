@@ -277,3 +277,5 @@ def menu():
             print("Неправильний номер меню.")
             pause()
 
+if __name__ == "__main__":
+    menu()
